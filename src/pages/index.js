@@ -1,29 +1,34 @@
-import * as React from "react"
-import { Link } from "gatsby"
-import { StaticImage } from "gatsby-plugin-image"
+import React from "react"
 
 import Layout from "../components/layout"
-import Seo from "../components/seo"
+import Seo from "../components/SEO"
 
-const IndexPage = () => (
+import Skus from "../components/Products/Skus"
+import CartOverview from "../components/CartOverview"
+
+import { loadStripe } from "@stripe/stripe-js"
+import { CartProvider } from "use-shopping-cart"
+
+const stripePromise = loadStripe(process.env.GATSBY_STRIPE_PUBLISHABLE_KEY)
+
+const url = typeof window !== "undefined" ? window.location.origin : null
+
+const CartExample = () => (
   <Layout>
-    <Seo title="Home" />
-    <h1>Hi people</h1>
-    <p>Welcome to your new Gatsby site.</p>
-    <p>Now go build something great.</p>
-    <StaticImage
-      src="../images/gatsby-astronaut.png"
-      width={300}
-      quality={95}
-      formats={["auto", "webp", "avif"]}
-      alt="A Gatsby astronaut"
-      style={{ marginBottom: `1.45rem` }}
-    />
-    <p>
-      <Link to="/page-2/">Go to page 2</Link> <br />
-      <Link to="/using-typescript/">Go to "Using TypeScript"</Link>
-    </p>
+    <Seo title="Bins" />
+    <CartProvider
+      mode="client-only"
+      stripe={stripePromise}
+      successUrl={`${url}/page-2/`}
+      cancelUrl={`${url}/`}
+      currency="AUD"
+      allowedCountries={["AU"]}
+      billingAddressCollection={true}
+    >
+      <CartOverview />
+      <Skus />
+    </CartProvider>
   </Layout>
 )
 
-export default IndexPage
+export default CartExample
